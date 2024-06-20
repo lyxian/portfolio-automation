@@ -11,12 +11,16 @@ Description: ..
 
 Table 1: currency
 - shortName, fullName, sgdConversion, updatedAt
+
 Table 2: region
 - name, `currencyId`
+
 Table 3: stock
 - ticker, name, industry, price, altUrl, updatedAt, `currencyId`
+
 Table 4: marketOrder
 - buyDate, cumulativeUnits, units, price, fees, `regionId`, `stockId`
+
 Table 5: portfolio
 - costValue, marketValue, marketDiff, sgdConversion, costValueSGD, marketValueSGD, marketDiffSGD, updatedAt, `regionId`
 
