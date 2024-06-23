@@ -31,17 +31,24 @@ scheduler = BlockingScheduler(timezone='Asia/Singapore')
 # ])
 if args.prod:
     trigger = OrTrigger([
-        CronTrigger(hour='9-23'),
-        CronTrigger(hour='0-5')
+        CronTrigger(day_of_week='mon-fri', hour='9-23'),
+        CronTrigger(day_of_week='tue-sat', hour='0-5')
     ])
     engine = getEngine('prod')
 else:
     trigger = CronTrigger(minute='*/1')
     engine = getEngine('test')
 
+def portfolioSnapshotJob(session):
+    logger.info(f'Job started: {portfolioSnapshot.__name__}')
+    try:
+        portfolioSnapshot(session)
+        logger.info(f'Job completed: {portfolioSnapshot.__name__}')
+    except Exception as e:
+        logger.info(f'Job failed: {e}')
 
 with Session(engine) as session:
-    scheduler.add_job(portfolioSnapshot, trigger=trigger, name='portfolioSnapshot', args=[session])
+    scheduler.add_job(portfolioSnapshotJob, trigger=trigger, name='portfolioSnapshot', args=[session])
 
     logger.info('=== Starting Scheduler ===')
     scheduler.start()

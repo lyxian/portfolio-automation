@@ -1,7 +1,7 @@
 # portfolio-automation
 
 **Learnings**
-- asyncio
+<!-- - asyncio -->
 - sqlalchemy X marshmallow
 
 Description: ..

@@ -44,8 +44,10 @@ def customLogger(app):
     # print(__name__, __file__)
     logger = logging.getLogger(app)
     logger.setLevel(level=logging.INFO)
-    file_handler = logging.FileHandler(filename=app.replace('.py', '.log'), mode='a', encoding='utf-8')
-    logger.addHandler(file_handler)
+    handler = logging.FileHandler(filename=app.replace('.py', '.log'), mode='a', encoding='utf-8')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
     return logger
 
 class YahooFinance():

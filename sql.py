@@ -133,7 +133,7 @@ if __name__ == '__main__':
     else:
         # test update
         # - get all stocks >> get current price >> snapshot portfolio
-        engine = getEngine('test')
+        engine = getEngine('prod')
         
         with Session(engine) as session:
             if args.prod:
