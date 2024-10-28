@@ -57,6 +57,7 @@ class YahooFinance():
 
     @staticmethod
     def getCurrencyConversion(target, base='SGD'):
+        if target == base: return 1.0
         url = 'https://api.rates-history-service.prd.aws.ofx.com/rate-history/api/1'
         payload = {"method":"spotRateHistory","data":{"base":base,"term":target,"period":"day"}}
         response = requests.post(url, headers=YahooFinance.headers, json=payload)
@@ -140,9 +141,31 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--ticker', type=str, default='RPI.L')
+    parser.add_argument('--currency', type=str, default='GBP')
+    parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
-    if 1:
-        YahooFinance.getPriceTEST(args.ticker)
+    if 0:
+        if 1:
+            YahooFinance.getPriceTEST(args.ticker)
+        else:
+            YahooFinance.getPriceAPI(args.ticker)
+            YahooFinance.getPriceHTML(args.ticker)
     else:
-        YahooFinance.getPriceAPI(args.ticker)
-        YahooFinance.getPriceHTML(args.ticker)
+        # add stock
+        from sql import getEngine
+        if args.debug:
+            engine = getEngine('test')
+        else:
+            engine = getEngine('prod')
+
+        with Session(engine) as session:
+            from models import Currency, Stock
+            currency = session.query(Currency).filter_by(shortName=args.currency).one()
+            name, region = YahooFinance.getStockAPI(args.ticker)
+            symbol, price, currency = YahooFinance.getPriceAPI(args.ticker)
+            try:
+                currency = session.query(Currency).filter_by(shortName=currency).one()
+            except Exception as e:
+                raise Exception(f'{args.ticker}, {symbol}, {price}, {currency} - {e}')
+            session.add(Stock(ticker=symbol, name=name,price=price,currency=currency))
+            session.commit()

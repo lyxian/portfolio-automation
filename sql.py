@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, MetaData, func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 from urllib.parse import quote
 import pendulum
 import argparse
@@ -85,15 +85,17 @@ def initDB(env):
 # ---
 @timeTaken
 def portfolioSnapshot(session, checkPrice=True):
+    # Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     from models import Stock, Currency, MarketOrder, Portfolio
     if checkPrice:
         for currency in session.query(Currency).all():
             currency.sgdConversion = YahooFinance.getCurrencyConversion(currency.shortName)
             session.add(currency)
+        session.commit()
         for stock in session.query(Stock).all():
             _, stock.price, _ = YahooFinance.getPriceAPI(stock.ticker)
             session.add(stock)
-    session.commit()
+        session.commit()
     portfolio = {}
     for order in session.query(MarketOrder).all():
         if order.region.id in portfolio:
@@ -118,12 +120,11 @@ def portfolioSnapshot(session, checkPrice=True):
             costValueSGD=costValueSGD,marketValueSGD=marketValueSGD,marketDiffSGD=marketDiffSGD, regionId=regionId))
     session.commit()
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--init', action='store_true')
-parser.add_argument('--prod', action='store_true')
-args = parser.parse_args()
-
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--init', action='store_true')
+    parser.add_argument('--prod', action='store_true')
+    args = parser.parse_args()
     if args.init:
         if args.prod:
             initDB('prod')

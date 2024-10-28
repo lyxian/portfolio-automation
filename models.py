@@ -39,7 +39,7 @@ class Currency(Base):
     shortName = Column(String(8))
     fullName = Column(String(30))
     sgdConversion = Column(Numeric(10, 5))
-    updatedAt = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
+    updatedAt = Column(DateTime, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
     region = relationship('Region', uselist=False, back_populates="currency")
     stocks = relationship('Stock', back_populates="currency")
 

@@ -6,6 +6,11 @@
 
 Description: ..
 
+### Issues
+- (mariadb.InterfaceError) Lost connection to server during query
+  - https://stackoverflow.com/questions/1884859/lost-connection-to-mysql-server-during-query
+  - https://bobcares.com/blog/mariadb-lost-connection-during-query/
+  - Can't reconnect until invalid transaction is rolled back.  Please rollback() fully before proceeding 
 
 ### DB Design
 
@@ -40,6 +45,13 @@ FK links
   - portfolio
 
 
+### ERROR
+
+sqlalchemy.exc.ProgrammingError: (raised as a result of Query-invoked autoflush; consider using a session.no_autoflush block if this flush is occurring prematurely)
+(mariadb.ProgrammingError) Invalid parameter type at row 3, column 1
+[SQL: UPDATE currency SET `sgdConversion`=? WHERE currency.id = ?]
+[parameters: [(0.5824818656891039, 1), (0.78, 2), (1, 3)]]
+(Background on this error at: https://sqlalche.me/e/20/f405)
 
 ### References
 

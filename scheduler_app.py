@@ -45,7 +45,8 @@ def portfolioSnapshotJob(session):
         portfolioSnapshot(session)
         logger.info(f'Job completed: {portfolioSnapshot.__name__}')
     except Exception as e:
-        logger.info(f'Job failed: {e}')
+        logger.info(f'Job failed, rolling back: {e}')
+        session.rollback()
 
 with Session(engine) as session:
     scheduler.add_job(portfolioSnapshotJob, trigger=trigger, name='portfolioSnapshot', args=[session])
